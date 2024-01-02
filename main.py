@@ -68,11 +68,12 @@ class PcDiagnosticsNode(Node):
         net_status = DiagnosticStatus()
         net_status.name = 'Network'
         net_status.hardware_id = 'Network Interface'
+        net_time_interval = 5
 
         net_stat = psutil.net_io_counters()
         net_sent_1 = net_stat.bytes_recv
         net_received_1 = net_stat.bytes_sent
-        time.sleep(5)  # time interval = 5s
+        time.sleep(net_time_interval)  # time interval = 5s
         net_stat = psutil.net_io_counters()
         net_sent_2 = net_stat.bytes_recv
         net_received_2 = net_stat.bytes_sent
@@ -80,7 +81,7 @@ class PcDiagnosticsNode(Node):
         net_sent = round((net_sent_2 - net_sent_1) / 1024 / 1024, 3)
         net_received = round((net_received_2 - net_received_1) / 1024, 3)
 
-        net_status.message = f'Time interval=5s: SENT: {net_sent} kB/s, RECEIVED: {net_received} kB/s'
+        net_status.message = f'Time interval= {net_time_interval}s: SENT: {net_sent} kB/s, RECEIVED: {net_received} kB/s'
 
         net_sent_key_value = KeyValue()
         net_sent_key_value.key = 'net_sent'
@@ -90,8 +91,13 @@ class PcDiagnosticsNode(Node):
         net_received_key_value.key = 'net_received'
         net_received_key_value.value = str(net_received)
 
+        net_time_interval_key_value = KeyValue()
+        net_time_interval_key_value.key = 'net_time_interval'
+        net_time_interval_key_value.value = str(net_time_interval)
+
         net_status.values.append(net_sent_key_value)
         net_status.values.append(net_received_key_value)
+        net_status.values.append(net_time_interval_key_value)
 
         # Append to status
         msg.status.append(cpu_status)
